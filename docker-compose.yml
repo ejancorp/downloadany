@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3.6.11-management
+    ports:
+      - 8080:15672  # management port (guest:guest)
+      - 5672:5672   # amqp port
+      - 25672:25672 # cluster port
+    environment:
+      - RABBITMQ_NODENAME=voucher
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
