@@ -7,6 +7,7 @@ const request = require('request');
 require('dotenv').config()
 
 const Worker = function () {
+
   this.outputDir = './output/';
   this.endpoint = ['amqp://', process.env.MQusername, ':', process.env.MQpassword, '@', process.env.MQhost, ':', process.env.MQport].join('');
   this.taskName = 'download_image';
@@ -59,8 +60,9 @@ Worker.prototype.download = function (message) {
         }
       });
     }
+    console.log(content);
     this.channel.ack(message);
-  });
+  }.bind(this));
 
 }
 
