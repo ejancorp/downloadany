@@ -48,7 +48,6 @@ Downloader.prototype.onParserData = function (line) {
   }
 
   this.lineNumber++;
-  console.log(this.lineNumber, list[0]);
   this.curBatch.push(list);
 
   if (_.size(this.curBatch) == this.maxBatch)  {
@@ -64,6 +63,8 @@ Downloader.prototype.parseLastData = function () {
 Downloader.prototype.processBatch = function () {
 
   let promises = [];
+
+  let start = Date.now();
 
   _.each(this.curBatch, function (value, key) {
 
@@ -91,7 +92,11 @@ Downloader.prototype.processBatch = function () {
   }.bind(this));
 
   Promise.all(promises).then(function (values) {
-    console.log(values);
+
+    console.log('Batch - ' + (parseInt(this.lineNumber) / parseInt(this.maxBatch)));
+    let end = Date.now();
+    console.log('Time taken: %ds', (end - start) / 1000);
+
     this.curBatch = [];
     this.lr.resume();
   }.bind(this));
