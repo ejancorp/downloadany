@@ -1,0 +1,21 @@
+{
+  "name": "fid",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csv-streamify": "^3.0.4",
+    "download": "^6.2.5",
+    "downloader": "^0.1.2",
+    "fs-extra": "^4.0.2",
+    "gulp-util": "^3.0.8",
+    "line-by-line": "^0.1.5",
+    "lodash": "^4.17.4",
+    "request": "^2.83.0"
+  }
+}
