@@ -11,7 +11,7 @@ const Tasks = function () {
   this.lineNumber = 0;
   this.endpoint = ['amqp://', process.env.MQusername, ':', process.env.MQpassword, '@', process.env.MQhost, ':', process.env.MQport].join('');
   this.taskName = 'download_image';
-
+  this.startLine = parseInt(GulpUtil.env.line) || 0;
   this.connection = null;
   this.channel = null;
   this.lr = null;
@@ -49,7 +49,7 @@ Tasks.prototype.onCreateChannel = function (channel) {
 Tasks.prototype.onMessage = function () {
 
   console.log('Sending messages...');
-  this.lr = new LineByLineReader(this.csvPath);
+  this.lr = new LineByLineReader(this.csvPath, { start: this.startLine });
   this.lr.on('line', this.onParserData.bind(this));
   this.lr.on('end', this.onParserEnd.bind(this));
 };
