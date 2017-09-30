@@ -17,6 +17,7 @@ const Downloader = function () {
   this.outputDir = './output/';
   this.csvPath = GulpUtil.env.file;
   this.lr = null;
+  this.lineNumber = 0;
 };
 
 Downloader.prototype.init = function () {
@@ -39,7 +40,8 @@ Downloader.prototype.onParserData = function (line) {
   }
 
   this.lr.pause();
-
+  this.lineNumber++;
+  console.log(this.lineNumber, list[0]);
   this.download(list[0], list[1]);
 };
 
