@@ -50,7 +50,7 @@ Downloader.prototype.download = function (url, path) {
   request(url, function (error, response, body) {
 
     if (!error && response.statusCode == 200) {
-      fs.ensureFile(path, function (err) {
+      fs.ensureFile(filePath, function (err) {
         if (!err) {
           fs.writeFile(filePath,  body);
         }
