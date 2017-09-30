@@ -16,9 +16,9 @@ const request = require('request');
 const Downloader = function () {
   this.outputDir = './output/';
   this.csvPath = GulpUtil.env.file;
+  this.maxBatch = parseInt(GulpUtil.env.batch);
   this.lr = null;
   this.lineNumber = 0;
-  this.maxBatch = 3;
   this.curBatch = [];
 };
 
@@ -26,6 +26,11 @@ Downloader.prototype.init = function () {
 
   if (!this.csvPath) {
     console.error('File not found!');
+    process.exit();
+  }
+
+  if (!this.maxBatch) {
+    console.error('Provide batch count!');
     process.exit();
   }
 
@@ -90,7 +95,6 @@ Downloader.prototype.processBatch = function () {
     this.curBatch = [];
     this.lr.resume();
   }.bind(this));
-
 };
 
 const app = new Downloader();
