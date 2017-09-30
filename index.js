@@ -18,6 +18,8 @@ const Downloader = function () {
   this.csvPath = GulpUtil.env.file;
   this.lr = null;
   this.lineNumber = 0;
+  this.maxBatch = 3;
+  this.curBatch = [];
 };
 
 Downloader.prototype.init = function () {
@@ -29,6 +31,7 @@ Downloader.prototype.init = function () {
 
   this.lr = new LineByLineReader(this.csvPath);
   this.lr.on('line', this.onParserData.bind(this));
+  this.lr.on('end', this.parseLastData.bind(this));
 };
 
 Downloader.prototype.onParserData = function (line) {
@@ -39,26 +42,52 @@ Downloader.prototype.onParserData = function (line) {
     return false;
   }
 
-  this.lr.pause();
   this.lineNumber++;
   console.log(this.lineNumber, list[0]);
-  this.download(list[0], list[1]);
+  this.curBatch.push(list);
+
+  if (_.size(this.curBatch) == this.maxBatch)  {
+    this.lr.pause();
+    this.processBatch();
+  }
 };
 
-Downloader.prototype.download = function (url, path) {
+Downloader.prototype.parseLastData = function () {
+  this.processBatch();
+};
 
-  let filePath = this.outputDir + path;
+Downloader.prototype.processBatch = function () {
 
-  request(url, function (error, response, body) {
+  let promises = [];
 
-    if (!error && response.statusCode == 200) {
-      fs.ensureFile(filePath, function (err) {
-        if (!err) {
-          fs.writeFile(filePath,  body);
+  _.each(this.curBatch, function (value, key) {
+
+    let p = new Promise(function (resolve, reject) {
+
+      let url = value[0];
+      let filePath = this.outputDir + value[1];
+
+      request(url, function (error, response, body) {
+
+        if (!error && response.statusCode == 200) {
+          fs.ensureFile(filePath, function (err) {
+            if (!err) {
+              fs.writeFile(filePath,  body);
+            }
+          });
         }
-      });
-    }
 
+        resolve(url);
+      });
+
+    }.bind(this));
+
+    promises.push(p);
+  }.bind(this));
+
+  Promise.all(promises).then(function (values) {
+    console.log(values);
+    this.curBatch = [];
     this.lr.resume();
   }.bind(this));
 
